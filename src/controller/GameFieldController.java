@@ -1,33 +1,13 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import model.Block;
 import model.BlocksGenerator;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class GameFieldController {
-
-    private Timer timer = new Timer();
-    private TimerTask updateView = new TimerTask() {
-        @Override
-        public void run() {
-
-        }
-    };
-
-    private int tileSize = 35;
-    int indent = 4;
-    private BlocksGenerator blocksGenerator = new BlocksGenerator(tileSize, indent);
-
-
 
     @FXML
     private Pane gameFieldPane;
@@ -36,11 +16,33 @@ public class GameFieldController {
     private Pane nextBlockPane;
 
 
+    private int tileSize = 35;
+    int indent = 4;
+    private BlocksGenerator blocksGenerator;
+
+
+
+
     @FXML
     protected void initialize() {
+        blocksGenerator = new BlocksGenerator(tileSize, indent, (int)gameFieldPane.getPrefHeight());
         drawNet();
-        drawBlock();
-        drawNextBlock();
+
+        blocksGenerator.generator(new BlocksGenerator.Callback() {
+            @Override
+            public void drawBlock(Block block) {
+                Platform.runLater(() -> gameFieldPane.getChildren().addAll(block.getCoords()));
+            }
+
+            @Override
+            public void drawNextBlock(Block block) {
+                Platform.runLater(() -> {
+                    nextBlockPane.getChildren().clear();
+                    nextBlockPane.getChildren().addAll(block.getCoords());
+                }
+                );
+            }
+        });
     }
 
     private void drawNet() {
@@ -59,14 +61,4 @@ public class GameFieldController {
     }
 
 
-
-    private void drawBlock(){
-        gameFieldPane.getChildren().addAll(blocksGenerator.getBlock().getCoords());
-    }
-
-    private void drawNextBlock(){
-        Block block = blocksGenerator.getBlock();
-        block.moveLeft(indent - 1);
-        nextBlockPane.getChildren().addAll(block.getCoords());
-    }
 }
