@@ -1,6 +1,7 @@
 package model;
 
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -40,17 +41,21 @@ public class BlocksGenerator {
 
     };
 
-    Color[] blockColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
+    private Color[] blockColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
 
 
     private int tileSize;
     private int indent;
     private int gameFieldHeight;
+    private int gameFieldWidth;
+    private ArrayList<KeyCode> keyEvents;
 
     private Callback callback;
 
     private Block currentBlock;
     private Block nextBlock;
+    private boolean isMovedFromKB = false;
+    private boolean firstBlock = true;
 
     private Timer timer = new Timer();
     private TimerTask updateViewTask;
@@ -62,12 +67,18 @@ public class BlocksGenerator {
         void drawBlock(Block block);
 
         void drawNextBlock(Block block);
+
+        void updateScore();
+
+        void gameOver();
     }
 
-    public BlocksGenerator(int tileSize, int indent, int gameFieldHeight) {
+    public BlocksGenerator(int tileSize, int indent, int gameFieldHeight, int gameFieldWidth, ArrayList<KeyCode> keyEvents) {
         this.tileSize = tileSize;
         this.indent = indent;
         this.gameFieldHeight = gameFieldHeight;
+        this.keyEvents = keyEvents;
+        this.gameFieldWidth = gameFieldWidth;
     }
 
 
@@ -82,17 +93,75 @@ public class BlocksGenerator {
                         blocksOnGameField.add(currentBlock);
                     }
                     createNewBlock();
+                    if (checkGameOver()) {
+                        callback.gameOver();
+                    }
+                    else if (!firstBlock) {
+                        callback.updateScore();
+                    }
+                    firstBlock = false;
                 }
-                updateBlockPosition();
+                if (keyEvents.isEmpty() || isMovedFromKB) {
+                    updateBlockPosition();
+                    isMovedFromKB = false;
+                }
+                else {
+                    moveCurrentBlock();
+                    isMovedFromKB = true;
+                }
 
             }
         };
 
-        timer.scheduleAtFixedRate(updateViewTask, 0, 500);
+        timer.scheduleAtFixedRate(updateViewTask, 0, 200);
+    }
+
+    private void moveCurrentBlock() {
+        for (KeyCode keyCode : keyEvents) {
+            switch (keyCode) {
+                case A:
+                case LEFT:
+                    if (checkSidesBorders(BlockMoveDirections.LEFT)) {
+                        currentBlock.move(BlockMoveDirections.LEFT, 1);
+                    }
+                    break;
+                case D:
+                case RIGHT:
+                    if (checkSidesBorders(BlockMoveDirections.RIGHT)) {
+                        currentBlock.move(BlockMoveDirections.RIGHT, 1);
+                    }
+                    break;
+                case TAB:
+                case R:
+                    currentBlock.rotate();
+                    break;
+            }
+        }
     }
 
     private void updateBlockPosition() {
-        currentBlock.moveDown(1);
+        currentBlock.move(BlockMoveDirections.DOWN, 1);
+    }
+
+    private boolean checkSidesBorders(BlockMoveDirections moveDirection) {
+        boolean mayMove = true;
+
+        if (moveDirection != null) {
+            for (Rectangle rect : currentBlock.getCoords()) {
+                if (moveDirection == BlockMoveDirections.LEFT) {
+                    if (rect.getX() < tileSize) {
+                        mayMove = false;
+                    }
+                }
+                if (moveDirection == BlockMoveDirections.RIGHT) {
+                    if (rect.getX() > gameFieldWidth - 2 * tileSize) {
+                        mayMove = false;
+                    }
+                }
+            }
+        }
+
+        return mayMove;
     }
 
     private boolean checkCollisions() {
@@ -106,11 +175,17 @@ public class BlocksGenerator {
                 }
             }
         }
-        else{
+        else {
             for (Block block : blocksOnGameField) {
                 for (Rectangle blRect : block.getCoords()) {
                     for (Rectangle rect : currentBlock.getCoords()) {
-                        if (rect.getY() >= gameFieldHeight - tileSize || rect.getY() >= blRect.getY() - 35) {
+                        if (rect.getY() == blRect.getY() - 35) {
+                            if (rect.getX() == blRect.getX()) {
+                                collision = true;
+                                break;
+                            }
+                        }
+                        if (rect.getY() == gameFieldHeight - tileSize) {
                             collision = true;
                             break;
                         }
@@ -121,18 +196,31 @@ public class BlocksGenerator {
         return collision;
     }
 
+    private boolean checkGameOver() {
+        boolean gameOver = false;
+
+        for (Block block : blocksOnGameField) {
+            for (Rectangle rect : block.getCoords()) {
+                if (rect.getY() < 0) {
+                    gameOver = true;
+                }
+            }
+        }
+        return gameOver;
+    }
+
     private void createNewBlock() {
 
         if (nextBlock == null) {
             nextBlock = getBlock();
         }
 
-        nextBlock.moveUp(4);
+        nextBlock.move(BlockMoveDirections.UP, 4);
         currentBlock = nextBlock;
         nextBlock = getBlock();
 
         Block nextBlockToDrawNow = nextBlock.getClone();
-        nextBlockToDrawNow.moveLeft(indent - 1);
+        nextBlockToDrawNow.move(BlockMoveDirections.LEFT, indent - 1);
 
         callback.drawBlock(currentBlock);
         callback.drawNextBlock(nextBlockToDrawNow);

@@ -48,6 +48,7 @@ public class Block {
         return new Block(blockCoords, width, height, tileSize);
     }
 
+
     public int getWidth() {
         return width;
     }
@@ -65,28 +66,33 @@ public class Block {
         return coords;
     }
 
-    public void moveLeft(int distance) {
-        for (Rectangle rect : coords) {
-            rect.setX(rect.getX() - tileSize * distance);
+    public void move(BlockMoveDirections direction, int distance) {
+        switch (direction) {
+            case LEFT:
+                for (Rectangle rect : coords) {
+                    rect.setX(rect.getX() - tileSize * distance);
+                }
+                break;
+            case RIGHT:
+                for (Rectangle rect : coords) {
+                    rect.setX(rect.getX() + tileSize * distance);
+                }
+                break;
+            case UP:
+                for (Rectangle rect : coords) {
+                    rect.setY(rect.getY() - tileSize * distance);
+                }
+                break;
+            case DOWN:
+                for (Rectangle rect : coords) {
+                    rect.setY(rect.getY() + tileSize * distance);
+                }
+                break;
         }
     }
 
-    public void moveRight(int distance) {
-        for (Rectangle rect : coords) {
-            rect.setX(rect.getX() + tileSize * distance);
-        }
-    }
+    public void rotate() {
 
-    public void moveDown(int distance) {
-        for (Rectangle rect : coords) {
-            rect.setY(rect.getY() + tileSize * distance);
-        }
-    }
-
-    public void moveUp(int distance) {
-        for (Rectangle rect : coords) {
-            rect.setY(rect.getY() - tileSize * distance);
-        }
     }
 
     private ArrayList<Rectangle> getCoordsListCopy(ArrayList<Rectangle> coords) {
