@@ -12,11 +12,16 @@ public class Block {
     private int tileSize;
     private int height;
 
+    private double minX;
+    private double minY;
+
+
     private Block(ArrayList<Rectangle> coords, int width, int height, int tileSize) {
         this.coords = coords;
         this.width = width;
         this.height = height;
         this.tileSize = tileSize;
+        calcMinCoords(true);
     }
 
     private Block(Block block) {
@@ -53,8 +58,8 @@ public class Block {
         return width;
     }
 
-    public int geHeight() {
-        return width;
+    public int getHeight() {
+        return height;
     }
 
     public Block getClone() {
@@ -72,27 +77,58 @@ public class Block {
                 for (Rectangle rect : coords) {
                     rect.setX(rect.getX() - tileSize * distance);
                 }
+                calcMinCoords(true);
                 break;
             case RIGHT:
                 for (Rectangle rect : coords) {
                     rect.setX(rect.getX() + tileSize * distance);
                 }
+                calcMinCoords(true);
                 break;
             case UP:
                 for (Rectangle rect : coords) {
                     rect.setY(rect.getY() - tileSize * distance);
                 }
+                calcMinCoords(false);
                 break;
             case DOWN:
                 for (Rectangle rect : coords) {
                     rect.setY(rect.getY() + tileSize * distance);
                 }
+                calcMinCoords(false);
                 break;
         }
+
     }
 
     public void rotate() {
+        for (Rectangle rect : coords) {
+            double prevX = rect.getX();
+            rect.setX(minX + (height * tileSize - (rect.getY() - minY)));
+            rect.setY(minY + (prevX - minX));
+        }
 
+
+        height = width + height;
+        width = height - width;
+        height = height - width;
+    }
+
+    private void calcMinCoords(boolean calcX){
+       if(calcX) {
+           minX = coords.get(0).getX();
+       }
+        minY = coords.get(0).getY();
+
+
+        for (Rectangle rect : coords) {
+            if (rect.getX() < minX && calcX) {
+                minX = rect.getX();
+            }
+            if (rect.getY() < minY) {
+                minY = rect.getY();
+            }
+        }
     }
 
     private ArrayList<Rectangle> getCoordsListCopy(ArrayList<Rectangle> coords) {

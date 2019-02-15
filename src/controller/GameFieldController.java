@@ -31,13 +31,12 @@ public class GameFieldController {
     private BlocksGenerator blocksGenerator;
     private SceneController sceneController = SceneController.getObj();
 
-    private ArrayList<KeyCode> keyEvents = new ArrayList<>();
 
     private Score score = Score.getObj();
 
     @FXML
     protected void initialize() {
-        blocksGenerator = new BlocksGenerator(tileSize, indent, (int) gameFieldPane.getPrefHeight(), (int) gameFieldPane.getPrefWidth(), keyEvents);
+        blocksGenerator = new BlocksGenerator(tileSize, indent, (int) gameFieldPane.getPrefHeight(), (int) gameFieldPane.getPrefWidth());
         drawNet();
 
         blocksGenerator.generator(new BlocksGenerator.Callback() {
@@ -58,7 +57,7 @@ public class GameFieldController {
             @Override
             public void updateScore() {
                 score.update();
-                Platform.runLater(() -> scoreLabel.setText("" + score));
+                Platform.runLater(() -> scoreLabel.setText("" + score.getValue()));
             }
 
             @Override
@@ -71,14 +70,7 @@ public class GameFieldController {
 
     public void setListeners(Scene scene) {
         scene.setOnKeyPressed(ae -> {
-            if (!keyEvents.contains(ae.getCode())) {
-                keyEvents.add(ae.getCode());
-            }
-        });
-        scene.setOnKeyReleased(ae -> {
-            if (keyEvents.contains(ae.getCode())) {
-                keyEvents.remove(ae.getCode());
-            }
+            blocksGenerator.moveCurrentBlock(ae.getCode());
         });
     }
 

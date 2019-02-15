@@ -37,28 +37,32 @@ public class BlocksGenerator {
                     {1, 0, 0, 0},
                     {1, 0, 0, 0},
                     {0, 0, 0, 0}
+            },
+            {
+                    {1, 0, 0, 0},
+                    {1, 1, 0, 0},
+                    {1, 0, 0, 0},
+                    {0, 0, 0, 0}
             }
 
     };
 
-    private Color[] blockColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
+    private Color[] blockColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
 
 
     private int tileSize;
     private int indent;
     private int gameFieldHeight;
     private int gameFieldWidth;
-    private ArrayList<KeyCode> keyEvents;
 
     private Callback callback;
 
     private Block currentBlock;
     private Block nextBlock;
-    private boolean isMovedFromKB = false;
     private boolean firstBlock = true;
 
     private Timer timer = new Timer();
-    private TimerTask updateViewTask;
+    private TimerTask blockMoveTask;
 
     private ArrayList<Block> blocksOnGameField = new ArrayList<>();
 
@@ -73,11 +77,10 @@ public class BlocksGenerator {
         void gameOver();
     }
 
-    public BlocksGenerator(int tileSize, int indent, int gameFieldHeight, int gameFieldWidth, ArrayList<KeyCode> keyEvents) {
+    public BlocksGenerator(int tileSize, int indent, int gameFieldHeight, int gameFieldWidth) {
         this.tileSize = tileSize;
         this.indent = indent;
         this.gameFieldHeight = gameFieldHeight;
-        this.keyEvents = keyEvents;
         this.gameFieldWidth = gameFieldWidth;
     }
 
@@ -85,7 +88,7 @@ public class BlocksGenerator {
     public void generator(Callback callback) {
         this.callback = callback;
 
-        updateViewTask = new TimerTask() {
+        blockMoveTask = new TimerTask() {
             @Override
             public void run() {
                 if (nextBlock == null || checkCollisions()) {
@@ -101,41 +104,33 @@ public class BlocksGenerator {
                     }
                     firstBlock = false;
                 }
-                if (keyEvents.isEmpty() || isMovedFromKB) {
-                    updateBlockPosition();
-                    isMovedFromKB = false;
-                }
-                else {
-                    moveCurrentBlock();
-                    isMovedFromKB = true;
-                }
 
+                updateBlockPosition();
             }
         };
 
-        timer.scheduleAtFixedRate(updateViewTask, 0, 200);
+        timer.scheduleAtFixedRate(blockMoveTask, 0, 350);
     }
 
-    private void moveCurrentBlock() {
-        for (KeyCode keyCode : keyEvents) {
-            switch (keyCode) {
-                case A:
-                case LEFT:
-                    if (checkSidesBorders(BlockMoveDirections.LEFT)) {
-                        currentBlock.move(BlockMoveDirections.LEFT, 1);
-                    }
-                    break;
-                case D:
-                case RIGHT:
-                    if (checkSidesBorders(BlockMoveDirections.RIGHT)) {
-                        currentBlock.move(BlockMoveDirections.RIGHT, 1);
-                    }
-                    break;
-                case TAB:
-                case R:
-                    currentBlock.rotate();
-                    break;
-            }
+    public void moveCurrentBlock(KeyCode keyCode) {
+
+        switch (keyCode) {
+            case A:
+            case LEFT:
+                if (checkSidesBorders(BlockMoveDirections.LEFT) && checkSideBlocks(BlockMoveDirections.LEFT)) {
+                    currentBlock.move(BlockMoveDirections.LEFT, 1);
+                }
+                break;
+            case D:
+            case RIGHT:
+                if (checkSidesBorders(BlockMoveDirections.RIGHT) && checkSideBlocks(BlockMoveDirections.RIGHT)) {
+                    currentBlock.move(BlockMoveDirections.RIGHT, 1);
+                }
+                break;
+            case TAB:
+            case R:
+                currentBlock.rotate();
+                break;
         }
     }
 
@@ -164,6 +159,29 @@ public class BlocksGenerator {
         return mayMove;
     }
 
+    private boolean checkSideBlocks(BlockMoveDirections moveDirection) {
+        boolean mayMove;
+
+        if (moveDirection != null) {
+            for (Block block : blocksOnGameField) {
+                for (Rectangle rect : block.getCoords()) {
+                    for (Rectangle cbRect : currentBlock.getCoords()) {
+                        if (rect.getY() == cbRect.getY()) {
+                            mayMove = rect.getX() != cbRect.getX() +
+                                    (moveDirection == BlockMoveDirections.LEFT ? -tileSize :
+                                            (moveDirection == BlockMoveDirections.RIGHT) ? tileSize : 0);
+                            if (!mayMove) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     private boolean checkCollisions() {
         boolean collision = false;
 
@@ -179,7 +197,7 @@ public class BlocksGenerator {
             for (Block block : blocksOnGameField) {
                 for (Rectangle blRect : block.getCoords()) {
                     for (Rectangle rect : currentBlock.getCoords()) {
-                        if (rect.getY() == blRect.getY() - 35) {
+                        if (rect.getY() == blRect.getY() - tileSize) {
                             if (rect.getX() == blRect.getX()) {
                                 collision = true;
                                 break;
@@ -209,6 +227,7 @@ public class BlocksGenerator {
         return gameOver;
     }
 
+    
     private void createNewBlock() {
 
         if (nextBlock == null) {
