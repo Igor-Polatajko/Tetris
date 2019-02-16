@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import model.Block;
 import model.BlocksGenerator;
 import model.Score;
@@ -63,6 +64,13 @@ public class GameFieldController {
             @Override
             public void gameOver() {
                 Platform.runLater(() -> sceneController.setSceneState(SceneStates.GAME_OVER));
+            }
+
+            @Override
+            public void clear(ArrayList<Rectangle> rectangles) {
+                Platform.runLater(() -> {
+                    gameFieldPane.getChildren().removeAll(rectangles);
+                });
             }
         });
 

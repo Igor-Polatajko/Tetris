@@ -75,6 +75,8 @@ public class BlocksGenerator {
         void updateScore();
 
         void gameOver();
+
+        void clear(ArrayList<Rectangle> rectangles);
     }
 
     public BlocksGenerator(int tileSize, int indent, int gameFieldHeight, int gameFieldWidth) {
@@ -103,6 +105,7 @@ public class BlocksGenerator {
                         callback.updateScore();
                     }
                     firstBlock = false;
+                    clearFullRows();
                 }
 
                 updateBlockPosition();
@@ -127,10 +130,15 @@ public class BlocksGenerator {
                     currentBlock.move(BlockMoveDirections.RIGHT, 1);
                 }
                 break;
-            case TAB:
-            case R:
+            case W:
+            case UP:
                 currentBlock.rotate();
                 break;
+            case S:
+            case DOWN:
+                if (!checkCollisions()) {
+                    currentBlock.move(BlockMoveDirections.DOWN, 1);
+                }
         }
     }
 
@@ -185,29 +193,24 @@ public class BlocksGenerator {
     private boolean checkCollisions() {
         boolean collision = false;
 
-        if (blocksOnGameField.size() == 0) {
-            for (Rectangle rect : currentBlock.getCoords()) {
-                if (rect.getY() >= gameFieldHeight - tileSize) {
-                    collision = true;
-                    break;
-                }
+
+        for (Rectangle rect : currentBlock.getCoords()) {
+            if (rect.getY() >= gameFieldHeight - tileSize) {
+                collision = true;
+                break;
             }
         }
-        else {
-            for (Block block : blocksOnGameField) {
-                for (Rectangle blRect : block.getCoords()) {
-                    for (Rectangle rect : currentBlock.getCoords()) {
-                        if (rect.getY() == blRect.getY() - tileSize) {
-                            if (rect.getX() == blRect.getX()) {
-                                collision = true;
-                                break;
-                            }
-                        }
-                        if (rect.getY() == gameFieldHeight - tileSize) {
+
+        for (Block block : blocksOnGameField) {
+            for (Rectangle blRect : block.getCoords()) {
+                for (Rectangle rect : currentBlock.getCoords()) {
+                    if (rect.getY() == blRect.getY() - tileSize) {
+                        if (rect.getX() == blRect.getX()) {
                             collision = true;
                             break;
                         }
                     }
+
                 }
             }
         }
@@ -227,7 +230,45 @@ public class BlocksGenerator {
         return gameOver;
     }
 
-    
+    private void clearFullRows() {
+        boolean isRowFull = false;
+        int rowBlocksCounter;
+
+        for (int y = gameFieldHeight - tileSize; y >= 0; y -= tileSize) {
+            for (int x = 0; x <= gameFieldWidth - tileSize; x += tileSize) {
+                rowBlocksCounter = 0;
+                for (Block block : blocksOnGameField) {
+                    for (Rectangle rect : block.getCoords()) {
+                        if (rect.getY() == y) {
+                            rowBlocksCounter++;
+                        }
+                    }
+                }
+                isRowFull = rowBlocksCounter == gameFieldWidth / tileSize;
+            }
+            if (isRowFull) {
+                ArrayList<Rectangle> rectangles = new ArrayList<>();
+                for (Block block : blocksOnGameField) {
+                    for (Rectangle rect : block.getCoords()) {
+                        if (rect.getY() == y) {
+                            rectangles.add(rect);
+                        }
+                        if (rect.getY() < y) {
+                            rect.setY(rect.getY() + tileSize);
+                        }
+                    }
+                }
+
+                for (Block block : blocksOnGameField) {
+                    block.getCoords().removeAll(rectangles);
+                }
+                callback.clear(rectangles);
+                y += tileSize;
+            }
+        }
+    }
+
+
     private void createNewBlock() {
 
         if (nextBlock == null) {
