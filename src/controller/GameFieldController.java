@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -40,6 +39,8 @@ public class GameFieldController {
         blocksGenerator = new BlocksGenerator(tileSize, indent, (int) gameFieldPane.getPrefHeight(), (int) gameFieldPane.getPrefWidth());
         drawNet();
 
+        score.resetScore();
+
         blocksGenerator.generator(new BlocksGenerator.Callback() {
             @Override
             public void drawBlock(Block block) {
@@ -64,6 +65,7 @@ public class GameFieldController {
             @Override
             public void gameOver() {
                 Platform.runLater(() -> sceneController.setSceneState(SceneStates.GAME_OVER));
+                score.save();
             }
 
             @Override

@@ -3,7 +3,6 @@ package controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -90,7 +89,7 @@ public class SceneController {
         FXMLLoader loader = null;
         try {
             loader = new FXMLLoader(getClass().getResource("/view/gameOver.fxml"));
-            AnchorPane root = (AnchorPane) loader.load();
+            VBox root = (VBox) loader.load();
             gameOverScene = new Scene(root);
         }
         catch (Exception e) {

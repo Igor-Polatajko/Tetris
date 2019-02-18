@@ -100,6 +100,7 @@ public class BlocksGenerator {
                     createNewBlock();
                     if (checkGameOver()) {
                         callback.gameOver();
+                        timer.cancel();
                     }
                     else if (!firstBlock) {
                         callback.updateScore();

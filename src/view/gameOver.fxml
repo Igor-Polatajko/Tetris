@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.GameOverController"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<VBox id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="15.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GameOverController">
+   <children>
+      <Label text="Game Over" textFill="#d30f0f">
+         <font>
+            <Font name="Comic Sans MS Bold" size="55.0" />
+         </font>
+      </Label>
+      <VBox alignment="CENTER" prefHeight="105.0" prefWidth="600.0" spacing="10.0">
+         <children>
+            <Label fx:id="currentScoreLabel" text="Your score: ">
+               <font>
+                  <Font name="Comic Sans MS" size="30.0" />
+               </font>
+            </Label>
+            <Label fx:id="bestScoreLabel" text="Best score: ">
+               <font>
+                  <Font name="Comic Sans MS" size="30.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <Button mnemonicParsing="false" onAction="#onMenuButtonClick" text="Menu">
+         <font>
+            <Font name="Comic Sans MS" size="27.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>
