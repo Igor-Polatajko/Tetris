@@ -39,7 +39,8 @@ public class SceneController {
                 stage.setScene(menuScene.getScene());
                 break;
             case BEST_SCORES:
-
+                GameScene bestScoresScene = getBestScoresScene();
+                stage.setScene(bestScoresScene.getScene());
                 break;
             case GAME_FIELD:
                 GameScene gameFieldScene = getGameFieldScene();
@@ -96,6 +97,21 @@ public class SceneController {
             e.printStackTrace();
         }
         return gameOverScene != null ? new GameScene(gameOverScene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
+
+    }
+
+    private GameScene getBestScoresScene(){
+        Scene bestScoresScene = null;
+        FXMLLoader loader = null;
+        try {
+            loader = new FXMLLoader(getClass().getResource("/view/bestScores.fxml"));
+            VBox root = (VBox) loader.load();
+            bestScoresScene = new Scene(root);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bestScoresScene != null ? new GameScene(bestScoresScene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
 
     }
 }

@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.BestScoresController"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<VBox id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="557.0" prefWidth="477.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BestScoresController">
+   <children>
+      <Label text="Best scores:">
+         <font>
+            <Font name="Comic Sans MS" size="30.0" />
+         </font>
+      </Label>
+      <ScrollPane hbarPolicy="NEVER" prefHeight="420.0" prefWidth="427.0">
+         <content>
+            <VBox fx:id="bestScoresContainer" prefHeight="411.0" prefWidth="409.0">
+               <padding>
+                  <Insets bottom="5.0" left="20.0" right="15.0" top="15.0" />
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
+      <VBox alignment="CENTER" prefHeight="69.0" prefWidth="427.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onMenuButtonClick" text="Menu">
+               <font>
+                  <Font name="Comic Sans MS" size="22.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="15.0" left="30.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>
