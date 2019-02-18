@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import model.Block;
 import model.BlocksGenerator;
 import model.Score;
@@ -24,6 +25,9 @@ public class GameFieldController {
 
     @FXML
     private Label scoreLabel;
+
+    @FXML
+    private Label pauseLabel;
 
 
     private int tileSize = 35;
@@ -72,6 +76,20 @@ public class GameFieldController {
             public void clear(ArrayList<Rectangle> rectangles) {
                 Platform.runLater(() -> {
                     gameFieldPane.getChildren().removeAll(rectangles);
+                });
+            }
+
+            @Override
+            public void pause() {
+                Platform.runLater(() ->{
+                    pauseLabel.setVisible(true);
+                });
+            }
+
+            @Override
+            public void resumeGame() {
+                Platform.runLater(() ->{
+                    pauseLabel.setVisible(false);
                 });
             }
         });

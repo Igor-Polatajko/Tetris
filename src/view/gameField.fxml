@@ -11,7 +11,14 @@
 
 <HBox id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="550.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GameFieldController">
    <children>
-      <Pane fx:id="gameFieldPane" prefHeight="700.0" prefWidth="350.0" />
+      <Pane fx:id="gameFieldPane" prefHeight="700.0" prefWidth="350.0">
+         <children>
+            <Label fx:id="pauseLabel" layoutX="80.0" layoutY="270.0" text="Pause" visible="false">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="70.0" />
+               </font>
+            </Label>
+         </children></Pane>
       <VBox prefHeight="700.0" prefWidth="204.0">
          <children>
             <Pane fx:id="nextBlockPane" prefHeight="200.0" prefWidth="140.0" />

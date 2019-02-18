@@ -47,8 +47,15 @@ public class BlocksGenerator {
 
     };
 
+    private enum GameState{
+        IN_GAME, PAUSE
+    }
+
     private Color[] blockColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
 
+
+    private GameState currentGameState = GameState.IN_GAME;
+    private GameState priviousGameState = GameState.IN_GAME;
 
     private int tileSize;
     private int indent;
@@ -77,6 +84,10 @@ public class BlocksGenerator {
         void gameOver();
 
         void clear(ArrayList<Rectangle> rectangles);
+
+        void pause();
+
+        void resumeGame();
     }
 
     public BlocksGenerator(int tileSize, int indent, int gameFieldHeight, int gameFieldWidth) {
@@ -93,23 +104,36 @@ public class BlocksGenerator {
         blockMoveTask = new TimerTask() {
             @Override
             public void run() {
-                if (nextBlock == null || checkCollisions()) {
-                    if (nextBlock != null) {
-                        blocksOnGameField.add(currentBlock);
-                    }
-                    createNewBlock();
-                    if (checkGameOver()) {
-                        callback.gameOver();
-                        timer.cancel();
-                    }
-                    else if (!firstBlock) {
-                        callback.updateScore();
-                    }
-                    firstBlock = false;
-                    clearFullRows();
-                }
+               if(currentGameState == GameState.IN_GAME) {
+                   if(priviousGameState != GameState.IN_GAME){
+                       priviousGameState = GameState.IN_GAME;
+                       callback.resumeGame();
+                   }
 
-                updateBlockPosition();
+                   if (nextBlock == null || checkCollisions()) {
+                       if (nextBlock != null) {
+                           blocksOnGameField.add(currentBlock);
+                       }
+                       createNewBlock();
+                       if (checkGameOver()) {
+                           callback.gameOver();
+                           timer.cancel();
+                       }
+                       else if (!firstBlock) {
+                           callback.updateScore();
+                       }
+                       firstBlock = false;
+                       clearFullRows();
+                   }
+
+                   updateBlockPosition();
+               }
+               else{
+                   if(priviousGameState != GameState.PAUSE){
+                       priviousGameState = GameState.PAUSE;
+                       callback.pause();
+                   }
+               }
             }
         };
 
@@ -121,25 +145,38 @@ public class BlocksGenerator {
         switch (keyCode) {
             case A:
             case LEFT:
+                if(currentGameState == GameState.PAUSE){break;}
                 if (checkSidesBorders(BlockMoveDirections.LEFT) && checkSideBlocks(BlockMoveDirections.LEFT)) {
                     currentBlock.move(BlockMoveDirections.LEFT, 1);
                 }
                 break;
             case D:
             case RIGHT:
+                if(currentGameState == GameState.PAUSE){break;}
                 if (checkSidesBorders(BlockMoveDirections.RIGHT) && checkSideBlocks(BlockMoveDirections.RIGHT)) {
                     currentBlock.move(BlockMoveDirections.RIGHT, 1);
                 }
                 break;
             case W:
             case UP:
+                if(currentGameState == GameState.PAUSE){break;}
                 currentBlock.rotate();
                 break;
             case S:
             case DOWN:
+                if(currentGameState == GameState.PAUSE){break;}
                 if (!checkCollisions()) {
                     currentBlock.move(BlockMoveDirections.DOWN, 1);
                 }
+                break;
+            case SPACE:
+                if(currentGameState == GameState.IN_GAME) {
+                    currentGameState = GameState.PAUSE;
+                }
+                else {
+                    currentGameState = GameState.IN_GAME;
+                }
+                break;
         }
     }
 
