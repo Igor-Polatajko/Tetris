@@ -161,6 +161,7 @@ public class BlocksGenerator {
             case UP:
                 if(currentGameState == GameState.PAUSE){break;}
                 currentBlock.rotate();
+                alignIfOutOfBounds();
                 break;
             case S:
             case DOWN:
@@ -178,6 +179,32 @@ public class BlocksGenerator {
                 }
                 break;
         }
+    }
+
+    private void alignIfOutOfBounds(){
+        boolean needLeftAlignment = false;
+        boolean needRightAlignment = false;
+        for (Rectangle rect : currentBlock.getCoords()){
+                    if (rect.getX() < 0)  {
+                        needLeftAlignment = true;
+                    }
+                    if (rect.getX() > gameFieldWidth - tileSize) {
+                        needRightAlignment = true;
+                    }
+        }
+
+        if(needLeftAlignment){
+            currentBlock.move(BlockMoveDirections.RIGHT, 1);
+        }
+
+        else if(needRightAlignment){
+            currentBlock.move(BlockMoveDirections.LEFT, 1);
+        }
+        else{
+            return;
+        }
+
+        alignIfOutOfBounds();
     }
 
     private void updateBlockPosition() {
