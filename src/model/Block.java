@@ -53,15 +53,6 @@ public class Block {
         return new Block(blockCoords, width, height, tileSize);
     }
 
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
     public Block getClone() {
         return new Block(this);
     }
@@ -114,10 +105,10 @@ public class Block {
         height = height - width;
     }
 
-    private void calcMinCoords(boolean calcX){
-       if(calcX) {
-           minX = coords.get(0).getX();
-       }
+    private void calcMinCoords(boolean calcX) {
+        if (calcX) {
+            minX = coords.get(0).getX();
+        }
         minY = coords.get(0).getY();
 
 

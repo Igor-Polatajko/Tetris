@@ -7,7 +7,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import model.Block;
 import model.BlocksGenerator;
 import model.Score;
@@ -81,14 +80,14 @@ public class GameFieldController {
 
             @Override
             public void pause() {
-                Platform.runLater(() ->{
+                Platform.runLater(() -> {
                     pauseLabel.setVisible(true);
                 });
             }
 
             @Override
             public void resumeGame() {
-                Platform.runLater(() ->{
+                Platform.runLater(() -> {
                     pauseLabel.setVisible(false);
                 });
             }
