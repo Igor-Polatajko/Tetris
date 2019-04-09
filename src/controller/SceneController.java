@@ -1,6 +1,7 @@
 package controller;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -35,21 +36,21 @@ public class SceneController {
     private void handleSceneState() {
         switch (currentSceneState) {
             case MENU:
-                GameScene menuScene = getMenuScene();
+                GameScene menuScene = loadScene("/view/menu.fxml");
                 stage.setScene(menuScene.getScene());
                 break;
             case BEST_SCORES:
-                GameScene bestScoresScene = getBestScoresScene();
+                GameScene bestScoresScene = loadScene("/view/bestScores.fxml");
                 stage.setScene(bestScoresScene.getScene());
                 break;
             case GAME_FIELD:
-                GameScene gameFieldScene = getGameFieldScene();
+                GameScene gameFieldScene = loadScene("/view/gameField.fxml");
                 GameFieldController controller = (GameFieldController) gameFieldScene.getController();
                 controller.setListeners(gameFieldScene.getScene());
                 stage.setScene(gameFieldScene.getScene());
                 break;
             case GAME_OVER:
-                GameScene gameOverScene = getGameOverScene();
+                GameScene gameOverScene = loadScene("/view/gameOver.fxml");
                 stage.setScene(gameOverScene.getScene());
                 break;
         }
@@ -57,61 +58,19 @@ public class SceneController {
     }
 
 
-    private GameScene getMenuScene() {
-        Scene menuScene = null;
+    private GameScene loadScene(String path){
+
+        Scene scene = null;
         FXMLLoader loader = null;
         try {
-            loader = new FXMLLoader(getClass().getResource("/view/menu.fxml"));
-            VBox root = (VBox) loader.load();
-            menuScene = new Scene(root);
+            loader = new FXMLLoader(getClass().getResource(path));
+            Parent root = loader.load();
+            scene = new Scene(root);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        return menuScene != null ? new GameScene(menuScene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
-    }
 
-    private GameScene getGameFieldScene() {
-        Scene gameFieldScene = null;
-        FXMLLoader loader = null;
-        try {
-            loader = new FXMLLoader(getClass().getResource("/view/gameField.fxml"));
-            HBox root = (HBox) loader.load();
-            gameFieldScene = new Scene(root);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return gameFieldScene != null ? new GameScene(gameFieldScene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
-    }
-
-    private GameScene getGameOverScene() {
-        Scene gameOverScene = null;
-        FXMLLoader loader = null;
-        try {
-            loader = new FXMLLoader(getClass().getResource("/view/gameOver.fxml"));
-            VBox root = (VBox) loader.load();
-            gameOverScene = new Scene(root);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return gameOverScene != null ? new GameScene(gameOverScene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
-
-    }
-
-    private GameScene getBestScoresScene(){
-        Scene bestScoresScene = null;
-        FXMLLoader loader = null;
-        try {
-            loader = new FXMLLoader(getClass().getResource("/view/bestScores.fxml"));
-            VBox root = (VBox) loader.load();
-            bestScoresScene = new Scene(root);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bestScoresScene != null ? new GameScene(bestScoresScene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
-
+        return scene != null ? new GameScene(scene, loader.getController()) : new GameScene(new Scene(new Label("Some errors!"), 450, 300), null);
     }
 }
